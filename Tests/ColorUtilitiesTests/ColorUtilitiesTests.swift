@@ -1,15 +1,22 @@
 import XCTest
 @testable import ColorUtilities
 
-final class ColorUtilitiesTests: XCTestCase {
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        XCTAssertEqual(ColorUtilities().text, "Hello, World!")
+final class ColorUtilitiesTests: XCTestCase
+{
+    func testHexColor()
+    {
+        let testColor = UIColor(red: 17.0/255, green: 34.0/255, blue: 51.0/255, alpha: 1)
+        XCTAssertEqual(hexColor("123"), testColor, "hexColor didn't work for '123'")
+    }
+
+    func testFromCSV()
+    {
+        let testColor = UIColor(red: 17.0/255, green: 34.0/255, blue: 51.0/255, alpha: 1)
+        XCTAssertEqual(fromCSV("(17, 34, 51)"), testColor, "fromCSV didn't work for (17, 34, 51)")
     }
 
     static var allTests = [
-        ("testExample", testExample),
+        ("testHexColor", testHexColor),
+        ("testHexColor", testFromCSV),
     ]
 }
