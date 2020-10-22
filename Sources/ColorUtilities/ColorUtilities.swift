@@ -37,6 +37,11 @@ public func rgb(_ r: Double, _ g: Double, _ b: Double) -> UIColor
     return rgba(r, g, b, 1)
 }
 
+public func rgba(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat, _ a: CGFloat) -> UIColor
+{
+    return UIColor(red: r, green: g, blue: b, alpha: a)
+}
+
 public func rgba(_ r: Double, _ g: Double, _ b: Double, _ a: Double) -> UIColor
 {
     return UIColor(red: CGFloat(r), green: CGFloat(g), blue: CGFloat(b), alpha: CGFloat(a))
