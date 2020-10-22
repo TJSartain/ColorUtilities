@@ -152,26 +152,59 @@ extension UIColor
     // MARK: - Blending -
     
     public func blend(_ top: UIColor,
-                      _ blendFunction: (CGFloat, CGFloat) -> CGFloat) -> UIColor
+                      _ function: (_ a: CGFloat, _ b: CGFloat) -> CGFloat) -> UIColor
     {
         let bottom = channels
         let top = top.channels
-        let r = blendFunction(bottom.r, top.r)
-        let g = blendFunction(bottom.g, top.g)
-        let b = blendFunction(bottom.b, top.b)
+        let r = function(bottom.r, top.r)
+        let g = function(bottom.g, top.g)
+        let b = function(bottom.b, top.b)
         return rgb(r, g, b) // whose alpha value?
     }
     
     public func multiply(_ top: UIColor) -> UIColor
     {
-        blend(top, { (_ a: CGFloat, _ b: CGFloat) -> CGFloat in
-            return a * b } )
+        blend(top, { (_ a: CGFloat, _ b: CGFloat) -> CGFloat in a * b } )
     }
     
     public func screen(_ top: UIColor) -> UIColor
     {
-        blend(top, { (_ a: CGFloat, _ b: CGFloat) -> CGFloat in
-            return 1 - (1 - a) * (1 - b) } )
+        blend(top, { (_ a: CGFloat, _ b: CGFloat) -> CGFloat in 1 - (1 - a) * (1 - b) } )
+    }
+    
+    public func softLight2(_ top: UIColor) -> UIColor
+    {
+        blend(top, { (_ a: CGFloat, _ b: CGFloat) -> CGFloat in pow(a, pow(2, 2 * (0.5 - b))) } )
+    }
+    
+    public func divide(_ top: UIColor) -> UIColor
+    {
+        blend(top, { (_ a: CGFloat, _ b: CGFloat) -> CGFloat in b == 0 ? (a == 0 ? 0 : 1) : a / b } )
+    }
+    
+    public func addition(_ top: UIColor) -> UIColor
+    {
+        blend(top, { (_ a: CGFloat, _ b: CGFloat) -> CGFloat in a + b > 1 ? 1 : a + b } )
+    }
+    
+    public func subtract(_ top: UIColor) -> UIColor
+    {
+        blend(top, { (_ a: CGFloat, _ b: CGFloat) -> CGFloat in b > a ? 0 : a - b } )
+    }
+    
+    public func difference(_ top: UIColor) -> UIColor
+    {
+        blend(top, { (_ a: CGFloat, _ b: CGFloat) -> CGFloat in a < b ? b - a : a - b } )
+    }
+    
+    public func darkenOnly(_ top: UIColor) -> UIColor
+    {
+        blend(top, { (_ a: CGFloat, _ b: CGFloat) -> CGFloat in a > b ? b : a } )
+    }
+    
+    public func lightenOnly(_ top: UIColor) -> UIColor
+    {
+        blend(top, { (_ a: CGFloat, _ b: CGFloat) -> CGFloat in a > b ? a : b } )
     }
     
     public func hardLight(_ top: UIColor) -> UIColor
@@ -194,12 +227,6 @@ extension UIColor
             } } )
     }
     
-    public func softLight2(_ top: UIColor) -> UIColor
-    {
-        blend(top, { (_ a: CGFloat, _ b: CGFloat) -> CGFloat in
-            return pow(a, pow(2, 2 * (0.5 - b))) } )
-    }
-    
     public func overlay(_ top: UIColor) -> UIColor
     {
         blend(top, { (_ a: CGFloat, _ b: CGFloat) -> CGFloat in
@@ -208,42 +235,6 @@ extension UIColor
             } else {
                 return 1 - 2 * (1 - a) * (1 - b)
             } } )
-    }
-    
-    public func divide(_ top: UIColor) -> UIColor
-    {
-        blend(top, { (_ a: CGFloat, _ b: CGFloat) -> CGFloat in
-            return b == 0 ? (a == 0 ? 0 : 1) : a / b } )
-    }
-    
-    public func addition(_ top: UIColor) -> UIColor
-    {
-        blend(top, { (_ a: CGFloat, _ b: CGFloat) -> CGFloat in
-            return a + b > 1 ? 1 : a + b } )
-    }
-    
-    public func subtract(_ top: UIColor) -> UIColor
-    {
-        blend(top, { (_ a: CGFloat, _ b: CGFloat) -> CGFloat in
-            return b > a ? 0 : a - b } )
-    }
-    
-    public func difference(_ top: UIColor) -> UIColor
-    {
-        blend(top, { (_ a: CGFloat, _ b: CGFloat) -> CGFloat in
-            return a < b ? b - a : a - b } )
-    }
-    
-    public func darkenOnly(_ top: UIColor) -> UIColor
-    {
-        blend(top, { (_ a: CGFloat, _ b: CGFloat) -> CGFloat in
-            return a > b ? b : a } )
-    }
-    
-    public func lightenOnly(_ top: UIColor) -> UIColor
-    {
-        blend(top, { (_ a: CGFloat, _ b: CGFloat) -> CGFloat in
-            return a > b ? a : b } )
     }
 }
 
