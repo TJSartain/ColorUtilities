@@ -5,7 +5,6 @@
 //
 
 import UIKit
-import StringUtilities
 
 func pin(_ n: Int, _ a: Int, _ b: Int) -> Int
 {
@@ -47,61 +46,79 @@ public func rgba(_ r: Double, _ g: Double, _ b: Double, _ a: Double) -> UIColor
     return UIColor(red: CGFloat(r), green: CGFloat(g), blue: CGFloat(b), alpha: CGFloat(a))
 }
 
-public func colorFrom(_ str: String) -> UIColor
+public func from(string: String) -> UIColor
 {
-    if str.hasPrefix("(") {
-        return fromCSV(str)
-    } else if str.hasPrefix("#") {
-        return hexColor(str)
+    if string.hasPrefix("(") {
+        return from(csv: string)
+    } else if string.hasPrefix("#") {
+        return from(hex: string)
     } else {
         return .clear
     }
 }
 
-public func fromCSV(_ c: String) -> UIColor
+public func from(csv: String) -> UIColor
 {
-    var csv = c.replace("(", with: "")
-    csv = csv.replace(")", with: "")
-    let parts = csv.split(separator: ",").map() { "\($0)".trim }
+    var csv = replace("(", with: "", in: csv)
+    csv = replace(")", with: "", in: csv)
+    let parts = csv.split(separator: ",").map() { trim("\($0)") }
     guard parts.count == 3 else {
         return .clear
     }
-    if let r = Int("\(String(describing: parts[0]))"),
-        let g = Int("\(String(describing: parts[1]))"),
-        let b = Int("\(String(describing: parts[2]))") {
+    if let  r = Int("\(parts[0])"),
+        let g = Int("\(parts[1])"),
+        let b = Int("\(parts[2])") {
         return rgb(r, g, b)
     } else {
         return .clear
     }
 }
 
-public func hexColor(_ h: String) -> UIColor
+public func from(hex: String) -> UIColor
 {
-    var hex = h.replace("#", with: "")
+    var hex = replace("#", with: "", in: hex)
     if hex.count == 1 {
         hex = hex + hex + hex + hex + hex + hex
     } else if hex.count == 2 {
         hex = hex + hex + hex
     } else if hex.count == 3 {
-        let h1 = hex[0]
-        let h2 = hex[1]
-        let h3 = hex[2]
-        hex = "\(h1)\(h1)\(h2)\(h2)\(h3)\(h3)"
+        let h1 = range(0, of: hex)
+        let h2 = range(1, of: hex)
+        let h3 = range(2, of: hex)
+        hex = h1 + h1 + h2 + h2 + h3 + h3
     }
     if hex.count != 6 {
         return .clear
     }
-    let r = hexToInt(hex: String(hex[0...1]))
-    let g = hexToInt(hex: String(hex[2...3]))
-    let b = hexToInt(hex: String(hex[4...5]))
-    print(r, g, b)
+    let r = hexToInt(range(0, 1, of: hex))
+    let g = hexToInt(range(2, 3, of: hex))
+    let b = hexToInt(range(4, 5, of: hex))
     return rgb(r, g, b)
 }
 
-func hexToInt(hex: String) -> Int
+func hexToInt(_ hex: String) -> Int
 {
     var value: UInt64 = 0
     let hexValueScanner = Scanner(string: hex)
     hexValueScanner.scanHexInt64(&value)
     return Int(value)
+}
+
+// MARK: - String Helpers -
+
+func replace(_ this: String, with that: String, in str: String) -> String
+{
+    return str.replacingOccurrences(of: this, with: that)
+}
+
+func trim(_ str: String) -> String
+{
+    return str.trimmingCharacters(in: .whitespacesAndNewlines)
+}
+
+func range(_ s: Int, _ e: Int? = 0, of str: String) -> String
+{
+    let start = str.index(str.startIndex, offsetBy: s)
+    let end = str.index(str.startIndex, offsetBy: (e! > s ? e! : s))
+    return String(str[start ... end])
 }

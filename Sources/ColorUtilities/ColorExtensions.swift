@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import StringUtilities
 
 extension UIColor
 {
@@ -28,47 +27,37 @@ extension UIColor
         return rgba(Double(c.r), Double(c.g), Double(c.b), a)
     }
     
-    public func lighter() -> UIColor
-    {
-        lighter(by: 25)
-    }
-    
-    public func lighter(by pct: CGFloat) -> UIColor
+    public func lighter(by pct: CGFloat? = 25) -> UIColor
     {
         let c = channels
-        return rgb(min(c.r + c.r * pct / 100, 1),
-                   min(c.g + c.g * pct / 100, 1),
-                   min(c.b + c.b * pct / 100, 1))
+        return rgb(min(c.r + c.r * pct! / 100, 1),
+                   min(c.g + c.g * pct! / 100, 1),
+                   min(c.b + c.b * pct! / 100, 1))
     }
     
-    public func darker() -> UIColor
-    {
-        darker(by: 20)
-    }
-    
-    public func darker(by pct: CGFloat) -> UIColor
+    public func darker(by pct: CGFloat? = 20) -> UIColor
     {
         let c = channels
-        return rgb(max(c.r - c.r * pct / 100, 0),
-                   max(c.g - c.g * pct / 100, 0),
-                   max(c.b - c.b * pct / 100, 0))
+        return rgb(max(c.r - c.r * pct! / 100, 0),
+                   max(c.g - c.g * pct! / 100, 0),
+                   max(c.b - c.b * pct! / 100, 0))
     }
     
-    public func description() -> String
+    public override var description: String
     {
         "\(hex()) \(csv())"
     }
     
     public func csv() -> String
     {
-        let c = channels
-        return String(format: "(%ld, %ld, %ld)", Int(round(c.r * 255)), Int(round(c.g * 255)), Int(round(c.b * 255)))
+        let c = intChannels
+        return String(format: "(%ld, %ld, %ld)", c.r, c.g, c.b)
     }
     
     public func hex() -> String
     {
-        let c = channels
-        return String(format: "#%02X%02X%02X", Int(round(c.r * 255)), Int(round(c.g * 255)), Int(round(c.b * 255)))
+        let c = intChannels
+        return String(format: "#%02X%02X%02X", c.r, c.g, c.b)
     }
     
     public func image() -> UIImage?
@@ -91,24 +80,24 @@ extension UIColor
         return image
     }
     
-    public func discImage(radius: CGFloat, text: String? = nil, _ font: UIFont? = UIFont.systemFont(ofSize: 72)) -> UIImage?
-    {
-        let rect = CGRect(x: 0, y: 0, width: 2*radius, height: 2*radius)
-        UIGraphicsBeginImageContext(rect.size)
-        let context = UIGraphicsGetCurrentContext()
-        context?.setFillColor(withAlpha(1).cgColor)
-        context?.fillEllipse(in: rect)
-        if let text = text, text.isNotEmpty() {
-            text.draw(at: CGPoint(x: radius, y: radius),
-                      font: font!,
-                      color: .white,
-                      align: .Center,
-                      vAlign: .Middle)
-        }
-        let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return image
-    }
+    //    public func discImage(radius: CGFloat, text: String? = nil, _ font: UIFont? = UIFont.systemFont(ofSize: 72)) -> UIImage?
+    //    {
+    //        let rect = CGRect(x: 0, y: 0, width: 2*radius, height: 2*radius)
+    //        UIGraphicsBeginImageContext(rect.size)
+    //        let context = UIGraphicsGetCurrentContext()
+    //        context?.setFillColor(withAlpha(1).cgColor)
+    //        context?.fillEllipse(in: rect)
+    //        if let text = text, text.isNotEmpty() {
+    //            text.draw(at: CGPoint(x: radius, y: radius),
+    //                      font: font!,
+    //                      color: .white,
+    //                      align: .Center,
+    //                      vAlign: .Middle)
+    //        }
+    //        let image = UIGraphicsGetImageFromCurrentImageContext()
+    //        UIGraphicsEndImageContext()
+    //        return image
+    //    }
     
     public func relativeLuminance() -> CGFloat
     {
